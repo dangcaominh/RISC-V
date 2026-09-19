@@ -83,18 +83,18 @@ package risc_pkg;
 
     // S-Type Instructions (Funct3)
     typedef enum logic [2:0] {
-        S_SB = 4'h0,
-        S_SH = 4'h1,
-        S_SW = 4'h2,
+        S_SB = 3'h0,
+        S_SH = 3'h1,
+        S_SW = 3'h2,
     } s_type_instr_t;
 
     // Register File Writeback Sources
 
     typedef enum logic [1:0] {
-        WB_SCR_ALU = 2'b00;
-        WB_SCR_MEM = 2'b01;
-        WB_SCR_IMM = 2'b10;
-        WB_SCR_PC = 2'b11;
+        WB_SCR_ALU = 2'b00,
+        WB_SCR_MEM = 2'b01,
+        WB_SCR_IMM = 2'b10,
+        WB_SCR_PC = 2'b11,
     } wb_scr_t;
 
     // Control Signal Struct
