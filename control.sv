@@ -90,10 +90,42 @@ module control(
     // ----------------------------------------------
     always_comb begin
         ctrl_s = '0;
+        ctrl_s.mem_valid = 1'b1;
+        ctrl_s.mem_write = 1'b1;
+        ctrl_s.alu_b_scr_select = 1'b1;
         case(funct3)
-            S_SB    :
-            S_SH    :
-            S_SW    : 
+            S_SB    : ctrl_s.mem_size = BYTE;
+            S_SH    : ctrl_s.mem_size = HALF_WORD;
+            S_SW    : ctrl_s.mem_size = WORD;
+        endcase
+    end
+
+    // ----------------------------------------------
+    // B-Type Control
+    // ----------------------------------------------
+    always_comb begin
+        ctrl_b = '0;
+        ctrl_b.alu_a_scr_select = 1'b1;
+        ctrl_b.alu_b_scr_select = 1'b1;
+        ctrl_b.alu_op = ADD;
+    end
+
+    // ----------------------------------------------
+    // U-Type Control
+    // ----------------------------------------------
+    always_comb begin
+        ctrl_u = '0;
+    end
+
+    // ----------------------------------------------
+    // J-Type Control
+    // ----------------------------------------------
+    always_comb begin
+        ctrl_j = '0;
+        ctrl_j.rf_write_enable = 1'b1;
+        case(optcode)
+            OPTCODE_LUI     : ctrl_i.wb_scr = WB_SCR_IMM;
+            OPTCODE_AUIPC   : {ctrl_i.alu_a_scr_select, ctrl_i.alu_b_scr_select} = {1'b1, 1'b1}; 
         endcase
     end
 
