@@ -83,6 +83,12 @@ module control(
             I_LBU   : {ctrl_i.mem_valid, ctrl_i.mem_size, ctrl_i.wb_scr, ctrl_i.load_zero_extend} = {1'b1, BYTE, WB_SCR_MEM, 1'b1};
             I_LHU   : {ctrl_i.mem_valid, ctrl_i.mem_size, ctrl_i.wb_scr, ctrl_i.load_zero_extend} = {1'b1, HALF_WORD, WB_SCR_MEM, 1'b1};
         endcase
+
+        if(optcode == OPTCODE_I_JALR) begin
+            ctrl_i.pc_scr_select = 1'b1;
+            ctrl_i.wb_scr = WB_SCR_PC;
+            ctrl_i.alu_op = ADD;
+        end
     end
 
     // ----------------------------------------------
@@ -115,6 +121,11 @@ module control(
     // ----------------------------------------------
     always_comb begin
         ctrl_u = '0;
+        ctrl_u.rf_write_enable = 1'b1;
+        case(optcode)
+            OPTCODE_LUI     : ctrl_u.wb_scr = WB_SCR_IMM;
+            OPTCODE_AUIPC   : {ctrl_u.alu_a_scr_select, ctrl_u.alu_b_scr_select} = {1'b1, 1'b1}; 
+        endcase
     end
 
     // ----------------------------------------------
@@ -123,10 +134,45 @@ module control(
     always_comb begin
         ctrl_j = '0;
         ctrl_j.rf_write_enable = 1'b1;
-        case(optcode)
-            OPTCODE_LUI     : ctrl_i.wb_scr = WB_SCR_IMM;
-            OPTCODE_AUIPC   : {ctrl_i.alu_a_scr_select, ctrl_i.alu_b_scr_select} = {1'b1, 1'b1}; 
-        endcase
+        ctri_j.wb_scr = WB_SCR_PC;
+        ctrl_j.pc_scr_select = 1'b1;
+        ctrl_j.alu_a_scr_select = 1'b1;
+        ctri_j.alu_b_scr_select = 1'b1;
     end
+
+    // ----------------------------------------------
+    // Final control selection
+    // ----------------------------------------------
+    always_comb begin
+        ctrl = '0;
+        if(r_type) begin
+            ctrl = ctrl_r;
+        end else if (i_type) begin
+            ctrl = ctrl_i;
+        end else if (s_type) begin
+            ctrl = ctrl_s;
+        end else if (b_type) begin
+            ctrl = ctrl_b;
+        end else if (u_type) begin
+            ctrl = ctrl_u;
+        end else if (j_type) begin
+            ctrl = ctrl_j;
+        end
+    end
+
+    // ----------------------------------------------
+    // Output assignments
+    // ----------------------------------------------
+
+    assign pc_sel = ctrl.pc_scr_select;
+    assign op1_sel = ctrl.alu_a_scr_select;
+    assign op2_sel = ctrl.alu_b_scr_select;
+    assign alu_op = ctrl.alu_op;
+    assign rf_wr_data_sel = ctrl.wb_scr;
+    assign dmem_req = ctrl.mem_valid;
+    assign dmem_size = ctrl.mem_size;
+    assign dmem_wr_en = ctrl.mem_write;
+    assign dmem_zero_extend = ctrl.load_zero_extend;
+    assign rf_wr_en = ctrl.rf_write_enable;
 
 endmodule
