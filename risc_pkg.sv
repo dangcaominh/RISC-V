@@ -3,16 +3,16 @@ package risc_pkg;
     // RISC-V Opcodes
 
     typedef enum logic [6:0] {  
-        OPTCODE_R_TYPE = 7'h33,
-        OPTCODE_I_LOAD = 7'h03,
-        OPTCODE_I_ALU  = 7'h13,
-        OPTCODE_I_JALR = 7'h67,
-        OPTCODE_S_TYPE = 7'h23,
-        OPTCODE_B_TYPE = 7'h63,
-        OPTCODE_LUI    = 7'h37,
-        OPTCODE_AUIPC  = 7'h17,
-        OPTCODE_JAL    = 7'h6f
-    } optcode_t;
+        OPCODE_R_TYPE = 7'h33,
+        OPCODE_I_LOAD = 7'h03,
+        OPCODE_I_ALU  = 7'h13,
+        OPCODE_I_JALR = 7'h67,
+        OPCODE_S_TYPE = 7'h23,
+        OPCODE_B_TYPE = 7'h63,
+        OPCODE_LUI    = 7'h37,
+        OPCODE_AUIPC  = 7'h17,
+        OPCODE_JAL    = 7'h6f
+    } opcode_t;
 
     // ALU Operation Selector
 
@@ -63,7 +63,7 @@ package risc_pkg;
         R_AND = 4'h7
     } r_type_instr_t;
 
-    // I-Type Instructions (Optcode[4], Funct3)
+    // I-Type Instructions (Opcode[4], Funct3)
 
     typedef enum logic [3:0] {
         I_LB = 4'h0,

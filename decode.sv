@@ -6,9 +6,9 @@ module decode (
     output logic [4:0] rs1_addr,
     output logic [4:0] rs2_addr,
     output logic [4:0] rd_addr,
-    output optcode_t optcode,
-    output logic [2:0] func3,
-    output logic [6:0] func7,
+    output opcode_t opcode,
+    output logic [2:0] funct3,
+    output logic [6:0] funct7,
 
     output logic r_type,
     output logic i_type,
@@ -26,7 +26,7 @@ logic [31:0] imm_b_type;
 logic [31:0] imm_u_type;
 logic [31:0] imm_j_type;
 
-assign optcode = instruction[6:0];
+assign opcode = instruction[6:0];
 assign rd_addr = instruction[11:7];
 assign funct3 = instruction[14:12];
 assign rs1_addr = instruction[19:15];
@@ -47,18 +47,18 @@ always_comb begin
     b_type = 1'b0;
     u_type = 1'b0;
     j_type = 1'b0;
-    case (optcode)
-        OPTCODE_R_TYPE: 
+    case (opcode)
+        OPCODE_R_TYPE: 
             r_type = 1'b1;
-        OPTCODE_I_ALU || OPTCODE_I_LOAD || OPTCODE_I_JALR:
+        OPCODE_I_ALU || OPCODE_I_LOAD || OPCODE_I_JALR:
             i_type = 1'b1;
-        OPTCODE_S_TYPE:
+        OPCODE_S_TYPE:
             s_type = 1'b1;
-        OPTCODE_B_TYPE:
+        OPCODE_B_TYPE:
             b_type = 1'b1;
-        OPTCODE_LUI || OPTCODE_AUIPC:
+        OPCODE_LUI || OPCODE_AUIPC:
             u_type = 1'b1;
-        OPTCODE_JAL:
+        OPCODE_JAL:
             j_type = 1'b1;
     endcase
 end

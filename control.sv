@@ -12,7 +12,7 @@ module control(
     // Instruction fields
     input logic [2:0] funct3,
     input logic [6:0] funct7,
-    input logic [6:0] optcode,
+    input logic [6:0] opcode,
 
     // Output 
     output logic pc_sel,
@@ -29,7 +29,7 @@ module control(
 
     // Internal signals
     logic [3:0] funct_r;
-    logic [3:0] optcode_i;
+    logic [3:0] opcode_i;
     logic funct7_bit5;
 
     assign funct7_bit5 = funct7[5];
@@ -62,12 +62,12 @@ module control(
     // ----------------------------------------------
     // I-Type Control
     // ----------------------------------------------
-    assign optcode_i = {optcode[4], funct3};
+    assign opcode_i = {opcode[4], funct3};
     always_comb begin
         ctrl_i = '0;
         ctrl_i.rf_write_enable = 1'b1;
         ctrl_i.alu_b_scr_select = 1'b1;
-        case(optcode_i)
+        case(opcode_i)
             I_ADDI  : ctrl_i.alu_op = ADD;
             I_SLTI  : ctrl_i.alu_op = SLT;
             I_SLTIU : ctrl_i.alu_op = SLTU;
@@ -84,7 +84,7 @@ module control(
             I_LHU   : {ctrl_i.mem_valid, ctrl_i.mem_size, ctrl_i.wb_scr, ctrl_i.load_zero_extend} = {1'b1, HALF_WORD, WB_SCR_MEM, 1'b1};
         endcase
 
-        if(optcode == OPTCODE_I_JALR) begin
+        if(opcode == opcode_I_JALR) begin
             ctrl_i.pc_scr_select = 1'b1;
             ctrl_i.wb_scr = WB_SCR_PC;
             ctrl_i.alu_op = ADD;
@@ -122,9 +122,9 @@ module control(
     always_comb begin
         ctrl_u = '0;
         ctrl_u.rf_write_enable = 1'b1;
-        case(optcode)
-            OPTCODE_LUI     : ctrl_u.wb_scr = WB_SCR_IMM;
-            OPTCODE_AUIPC   : {ctrl_u.alu_a_scr_select, ctrl_u.alu_b_scr_select} = {1'b1, 1'b1}; 
+        case(opcode)
+            opcode_LUI     : ctrl_u.wb_scr = WB_SCR_IMM;
+            opcode_AUIPC   : {ctrl_u.alu_a_scr_select, ctrl_u.alu_b_scr_select} = {1'b1, 1'b1}; 
         endcase
     end
 
